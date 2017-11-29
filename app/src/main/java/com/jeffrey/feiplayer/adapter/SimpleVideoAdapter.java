@@ -34,6 +34,7 @@ public class SimpleVideoAdapter extends RecyclerView.Adapter<SimpleVideoAdapter.
                 FeiVideoInfoManager.getInstance().setListPosition(position);
             }
         });
+        holder.feiVideoView.stopPlayback();
     }
 
     @Override

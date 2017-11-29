@@ -155,7 +155,9 @@ public class FeiVideoControllerView implements IMediaController,View.OnClickList
     public void setMediaPlayer(MediaController.MediaPlayerControl player) {
         this.mPlayer = player;
 //        updatePausePlay();
-        mHandler.sendEmptyMessage(UPDATE_PAUSE_START);
+//        mHandler.sendEmptyMessage(UPDATE_PAUSE_START);
+        mHandler.sendEmptyMessageDelayed(UPDATE_PAUSE_START,100);
+
 
     }
 
@@ -166,7 +168,8 @@ public class FeiVideoControllerView implements IMediaController,View.OnClickList
             mShowing=true;
             rootView.setVisibility(View.VISIBLE);
         }
-        mHandler.sendEmptyMessage(UPDATE_PAUSE_START);
+        mHandler.sendEmptyMessageDelayed(UPDATE_PAUSE_START,100);
+//        mHandler.sendEmptyMessage(UPDATE_PAUSE_START);
         mHandler.sendEmptyMessage(SHOW_PROGRESS);
         if (timeout != 0){
             mHandler.removeMessages(FADE_OUT);
@@ -203,7 +206,7 @@ public class FeiVideoControllerView implements IMediaController,View.OnClickList
                 }else {
                     mPlayer.start();
                 }
-                mHandler.sendEmptyMessage(UPDATE_PAUSE_START);
+                mHandler.sendEmptyMessageDelayed(UPDATE_PAUSE_START,100);
 
                 Log.d("fei","updatePausePlay  end" + mPlayer.isPlaying());
                 break;

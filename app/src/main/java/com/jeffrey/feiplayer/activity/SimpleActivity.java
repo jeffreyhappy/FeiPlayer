@@ -23,7 +23,7 @@ public class SimpleActivity extends AppCompatActivity {
 
         mVideoView = findViewById(R.id.video_view);
         mVideoView.setVideoPath(VIDEO_PATH);
-        mVideoView.start();
+//        mVideoView.start();
     }
 
 

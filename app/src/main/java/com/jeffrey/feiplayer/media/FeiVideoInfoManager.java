@@ -9,10 +9,11 @@ import android.view.ViewGroup;
 
 public class FeiVideoInfoManager {
     static FeiVideoInfoManager manager;
-    private ViewGroup mOriginParentView;
-    private ViewGroup.LayoutParams mOriginLP;
-    private boolean isFullScreen;
-    private FeiVideoView mPlayView;
+
+    private ViewGroup mOriginParentView; //全屏前的父view
+    private ViewGroup.LayoutParams mOriginLP;//全屏前的布局参数
+    private boolean isFullScreen;//当前是否是全屏
+    private FeiVideoView mPlayView;//全屏当前的PlayView
     private int listPosition; //给列表用的
 
     public static FeiVideoInfoManager getInstance(){

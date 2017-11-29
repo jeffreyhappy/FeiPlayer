@@ -8,6 +8,7 @@
         android:layout_height="match_parent"/>
     <ProgressBar
         android:id="@+id/loading"
+        android:visibility="gone"
         android:layout_centerInParent="true"
         style="?android:progressBarStyleInverse"
         android:layout_width="40dp"

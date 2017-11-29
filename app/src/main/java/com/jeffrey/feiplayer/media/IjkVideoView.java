@@ -127,6 +127,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     private TextView subtitleDisplay;
 
+
+    private FeiPlayCallback playCallback;
+
     public IjkVideoView(Context context) {
         super(context);
         initVideoView(context);
@@ -296,6 +299,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             mTargetState = STATE_IDLE;
             AudioManager am = (AudioManager) mAppContext.getSystemService(Context.AUDIO_SERVICE);
             am.abandonAudioFocus(null);
+            if (playCallback != null){
+                playCallback.onStop();
+            }
         }
     }
 
@@ -812,6 +818,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         if (isInPlaybackState()) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
+            if (playCallback != null){
+                playCallback.onStart();
+            }
         }
         mTargetState = STATE_PLAYING;
     }
@@ -822,6 +831,9 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentState = STATE_PAUSED;
+                if (playCallback != null){
+                    playCallback.onPause();
+                }
             }
         }
         mTargetState = STATE_PAUSED;
@@ -833,6 +845,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     public void resume() {
         openVideo();
+    }
+
+    public void setPlayCallback(FeiPlayCallback callback){
+        this.playCallback = callback;
     }
 
     @Override

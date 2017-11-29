@@ -82,7 +82,7 @@ public class FeiVideoView extends FrameLayout {
             @Override
             public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
                 Log.d("fei","onInfo what = " + what);
-                if (what == IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED||what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                if (ijkVideoView.isPlaying() && (what == IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED||what == IMediaPlayer.MEDIA_INFO_BUFFERING_START)) {
                     showLoading();
                 } else if (what == IMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START||what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
                     hideLoading();
@@ -98,6 +98,28 @@ public class FeiVideoView extends FrameLayout {
         });
         mLoadingView = (ProgressBar) view.findViewById(R.id.loading);
 
+        ijkVideoView.setPlayCallback(new FeiPlayCallback() {
+            @Override
+            public void onStart() {
+                if (FeiVideoInfoManager.getInstance().getPlayView() != null
+                        &&FeiVideoInfoManager.getInstance().getPlayView() != FeiVideoView.this){
+                    FeiVideoInfoManager.getInstance().getPlayView().pause();
+                }
+                FeiVideoInfoManager.getInstance().setPlayView(FeiVideoView.this);
+
+            }
+
+            @Override
+            public void onPause() {
+
+            }
+
+            @Override
+            public void onStop() {
+                FeiVideoInfoManager.getInstance().setPlayView(null);
+            }
+        });
+
     }
 
 
@@ -111,11 +133,15 @@ public class FeiVideoView extends FrameLayout {
 
     }
 
+    public void pause(){
+        ijkVideoView.pause();
+    }
 
 
 
     public void stopPlayback(){
         ijkVideoView.stopPlayback();
+
     }
 
     public void release(boolean release){
