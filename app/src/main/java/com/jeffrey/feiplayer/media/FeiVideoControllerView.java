@@ -88,7 +88,7 @@ public class FeiVideoControllerView implements IMediaController,View.OnClickList
                 //这会导致seek m3u8切片文件的时候拖动seek时不准确，所以需要在拖动完成后才进行播放器的seekTo()
 //                mPlayer.seekTo( (int) newposition);
                 if (mCurrentTime != null){
-                    mCurrentTime.setText(stringForTime((int)mDraggingProgress));
+                    mCurrentTime.setText(FeiVideoView.stringForTime((int)mDraggingProgress));
                 }
                 Log.d("fei","onProgressChanged progress new " + progress);
                 Log.d("fei","onProgressChanged progress old " + mPlayer.getCurrentPosition()+ " "  + mPlayer.getDuration());
@@ -256,30 +256,16 @@ public class FeiVideoControllerView implements IMediaController,View.OnClickList
         }
 
         if (mEndTime != null){
-            mEndTime.setText(stringForTime(duration));
+            mEndTime.setText(FeiVideoView.stringForTime(duration));
         }
         if (mCurrentTime != null){
-            mCurrentTime.setText(stringForTime(position));
+            mCurrentTime.setText(FeiVideoView.stringForTime(position));
         }
 
         return position;
     }
 
-    private String stringForTime(int timeMs) {
-        int totalSeconds = timeMs / 1000;
 
-        int seconds = totalSeconds % 60;
-        int minutes = (totalSeconds / 60) % 60;
-        int hours   = totalSeconds / 3600;
-        StringBuilder mFormatBuilder = new StringBuilder();
-        mFormatBuilder.setLength(0);
-        Formatter formatter = new Formatter(mFormatBuilder, Locale.getDefault());
-        if (hours > 0) {
-            return formatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
-        } else {
-            return formatter.format("%02d:%02d", minutes, seconds).toString();
-        }
-    }
 
 
 

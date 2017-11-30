@@ -14,6 +14,8 @@ import com.jeffrey.feiplayer.adapter.SimpleVideoAdapter;
 import com.jeffrey.feiplayer.media.FeiVideoInfoManager;
 import com.jeffrey.feiplayer.media.FeiVideoView;
 
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
+
 public class ListActivity extends AppCompatActivity {
 
     RecyclerView rv;
@@ -27,6 +29,9 @@ public class ListActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(new SimpleVideoAdapter());
 
+        // init player
+        IjkMediaPlayer.loadLibrariesOnce(null);
+        IjkMediaPlayer.native_profileBegin("libijkplayer.so");
 
 //
 //        new Handler().postDelayed(new Runnable() {
@@ -44,8 +49,9 @@ public class ListActivity extends AppCompatActivity {
 
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
             if (currentVideoView != null){
-//                rv.getLayoutManager().scrollToPosition(FeiVideoInfoManager.getInstance().getListPosition());
-                testScrollBack();
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) rv.getLayoutManager();
+                linearLayoutManager.scrollToPositionWithOffset(FeiVideoInfoManager.getInstance().getListPosition(),0);
+//                testScrollBack();
 
             }
         }else {
@@ -61,7 +67,21 @@ public class ListActivity extends AppCompatActivity {
                 return;
             }
         }
+
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FeiVideoInfoManager manager = FeiVideoInfoManager.getInstance();
+        if (manager.getPlayView() != null){
+            FeiVideoView feiVideoView = manager.getPlayView();
+            feiVideoView.stopPlayback();
+            feiVideoView.release(true);
+            feiVideoView.stopBackgroundPlay();
+            IjkMediaPlayer.native_profileEnd();
+        }
     }
 
     private void testScrollBack(){

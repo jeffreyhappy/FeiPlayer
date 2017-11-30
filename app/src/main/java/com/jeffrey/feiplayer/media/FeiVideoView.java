@@ -20,17 +20,23 @@ import android.widget.Toast;
 
 import com.jeffrey.feiplayer.R;
 
+import java.util.Formatter;
+import java.util.Locale;
+
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
  * Created by Li on 2017/11/24.
  */
 
-public class FeiVideoView extends FrameLayout {
+public class FeiVideoView extends VideoBehaviorView {
     IjkVideoView ijkVideoView;
     ProgressBar mLoadingView;
     FeiVideoControllerView controllerView;
-//    FeiVideoInfoManager videoInfoManager;
+    VideoSystemOverlay videoSystemOverlay;
+
+    //    FeiVideoInfoManager videoInfoManager;
+    private VideoProgressOverlay videoProgressOverlay;
     private int initWidth;
     private int initHeight;
     private FeiVideoControllerView.ClickFullListener clickFullListener;
@@ -55,11 +61,17 @@ public class FeiVideoView extends FrameLayout {
 //        videoInfoManager = new FeiVideoInfoManager();
         View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fei_video_view,this,false);
         addView(view);
+        videoSystemOverlay = (VideoSystemOverlay) findViewById(R.id.video_system_overlay);
+        videoProgressOverlay = (VideoProgressOverlay) findViewById(R.id.video_progress_overlay);
         controllerView = new FeiVideoControllerView(getContext(),(ViewGroup)view);
         controllerView.setClickFullListener(new FeiVideoControllerView.ClickFullListener() {
             @Override
             public void onClickFull() {
-                showFull(getContext(),true);
+                if (getVideoInfoManager().getFullScreen()){
+                    showFull(getContext(),false);
+                }else {
+                    showFull(getContext(),true);
+                }
                 if (clickFullListener != null){
                     clickFullListener.onClickFull();
                 }
@@ -181,6 +193,39 @@ public class FeiVideoView extends FrameLayout {
         this.clickFullListener = clickFullListener;
     }
 
+
+    @Override
+    protected void endGesture(int behaviorType) {
+        switch (behaviorType) {
+            case VideoBehaviorView.FINGER_BEHAVIOR_BRIGHTNESS:
+            case VideoBehaviorView.FINGER_BEHAVIOR_VOLUME:
+                Log.i("DDD", "endGesture: left right");
+                videoSystemOverlay.hide();
+                break;
+            case VideoBehaviorView.FINGER_BEHAVIOR_PROGRESS:
+                Log.i("DDD", "endGesture: bottom");
+                ijkVideoView.seekTo(videoProgressOverlay.getTargetProgress());
+                videoProgressOverlay.hide();
+                break;
+        }
+    }
+
+    @Override
+    protected void updateSeekUI(int delProgress) {
+        videoProgressOverlay.show(delProgress, ijkVideoView.getCurrentPosition(), ijkVideoView.getDuration());
+    }
+
+    @Override
+    protected void updateVolumeUI(int max, int progress) {
+        videoSystemOverlay.show(VideoSystemOverlay.SystemType.VOLUME, max, progress);
+    }
+
+    @Override
+    protected void updateLightUI(int max, int progress) {
+        videoSystemOverlay.show(VideoSystemOverlay.SystemType.BRIGHTNESS, max, progress);
+    }
+
+
     //    public static void startFullscreen(Context context, Class _class, String url,VideoInfos infos) {
 ////        JZUtils.setRequestedOrientation(JZUtils.scanForActivity(context), FULLSCREEN_ORIENTATION);
 //        ViewGroup vp = (ViewGroup) (JZUtils.scanForActivity(context))//.getWindow().getDecorView();
@@ -298,6 +343,23 @@ public class FeiVideoView extends FrameLayout {
             return  true;
         }else {
             return false;
+        }
+    }
+
+
+    public static String stringForTime(int timeMs) {
+        int totalSeconds = timeMs / 1000;
+
+        int seconds = totalSeconds % 60;
+        int minutes = (totalSeconds / 60) % 60;
+        int hours   = totalSeconds / 3600;
+        StringBuilder mFormatBuilder = new StringBuilder();
+        mFormatBuilder.setLength(0);
+        Formatter formatter = new Formatter(mFormatBuilder, Locale.getDefault());
+        if (hours > 0) {
+            return formatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return formatter.format("%02d:%02d", minutes, seconds).toString();
         }
     }
 }
